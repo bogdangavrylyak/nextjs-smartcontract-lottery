@@ -19,18 +19,20 @@ const LotteryEntrance = () => {
   const [recentWinner, setRecentWinner] = useState("0");
 
   useEffect(() => {
-    if(lotteryAddress) {
-      // @ts-ignore
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const contract = new ethers.Contract(lotteryAddress!, JSON.stringify(abi), provider);
-    
-      contract.on('WinnerPicked', (from, to, value, event) => {
-        console.log('winner 0: ', to.args[0]);
-        console.log('winner: ', to.args.winner);
-        setRecentWinner(to.args.winner);
-      });
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const contract = new ethers.Contract(lotteryAddress!, JSON.stringify(abi), provider);
+
+    const handleWinnerPicked: ethers.providers.Listener = (from, to, value, event) => {
+      console.log('winner 0: ', to.args[0]);
+      console.log('winner: ', to.args.winner);
+      setRecentWinner(to.args.winner);
     }
-  });
+    
+    contract.on('WinnerPicked', handleWinnerPicked);
+    return () => {
+      contract.off('WinnerPicked', handleWinnerPicked);
+    };
+  }, [lotteryAddress]);
 
   const { runContractFunction: enterLottery, isLoading, isFetching } = useWeb3Contract({
     abi: abi,
