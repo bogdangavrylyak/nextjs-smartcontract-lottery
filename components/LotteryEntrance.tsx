@@ -12,6 +12,7 @@ const LotteryEntrance = () => {
   const addresses: contractAddressesInterface = contractAddress;
   const { chainId: chainIdHex, isWeb3Enabled } = useMoralis();
   const chainId = parseInt(chainIdHex!).toString();
+  console.log('chainId: ', chainId);
   const lotteryAddress = chainId in addresses ? addresses[chainId][0] : null;
   const [entranceFee, setEntranceFee] = useState("0");
   const [numberOfPlayers, setNumberOfPlayers] = useState("0");
